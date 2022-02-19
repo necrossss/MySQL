@@ -1,0 +1,26 @@
+
+-- Триггер doc_move_emp
+-- При добавлении записи об увольнении в таблицу documents, автоматом добавляется запись 
+-- в таблицу перемещений сотрудников (move_employee) с признаком его увольнения.
+-- Реализовано только с увольнением.
+
+DROP TRIGGER IF EXISTS doc_move_emp;
+delimiter //
+CREATE TRIGGER doc_move_emp AFTER INSERT ON documents
+FOR EACH ROW
+BEGIN
+	IF (NEW.type_id = 3) THEN
+	    INSERT INTO move_employee (salary, allowance,type_move_id,schedule_id ,date_move ,document_id ,position_id ,depart_id ,emp_id ,rate , created_at,updated_at)
+	    SELECT me.salary, me.allowance, NEW.type_id,me.schedule_id,NEW.date_doc,NEW.id,me.position_id,me.depart_id,NEW.emp_id ,1, now(),now() 
+	    from documents d join  move_employee me ON me.emp_id = d.emp_id and date_move=(SELECT MAX(date_move) FROM move_employee me2 where me.emp_id = me2.emp_id ) 
+	    where  d.emp_id = NEW.emp_id limit 1;
+    END IF;
+END //
+delimiter ;
+
+
+-- Проверяем
+-- INSERT INTO documents  (id, type_id, date_doc, number1, emp_id) VALUES (112,3,'2022-02-19','6666',98);
+-- SELECT * from documents d ;
+-- SELECT *from type_document td ;
+-- select * FROM move_employee me ;

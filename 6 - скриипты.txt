@@ -1,0 +1,14 @@
+-- Вывести всех сотрудников с должностями, окладом и подразделениями. 
+-- В выборку должно попасть последнее движение по сотруднику, на примере сотрудника id 99 (поменялся оклад) и 100 (поменялась должность)
+
+SELECT e.id, p.first_name , p.last_name , p.gender , p.birthday , e.tab_number, p2.name  , d.name ,  me.salary 
+FROM  employee e 
+	left join person p ON e.person_id = p.id
+	       join  move_employee me ON me.emp_id = e.id and date_move=(SELECT MAX(date_move) FROM move_employee me2 where me.emp_id = me2.emp_id )  
+	        join positions p2 ON me.position_id = p2.id 
+	       	  JOIN departments d ON me.depart_id = d.id 
+order by e.id
+
+
+
+

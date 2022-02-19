@@ -1,0 +1,40 @@
+-- Представление 1. Уволенные сотрудники за сегодня.
+
+CREATE VIEW fired_today (first_name, last_name, tab_number, `position`, department, date_fired) AS 
+SELECT p.first_name , p.last_name ,  e.tab_number, p2.name  , d.name , me.date_move  
+FROM move_employee me left join employee e  ON me.emp_id = e.id 
+						join person p ON e.person_id = p.id
+							 join positions p2 ON me.position_id = p2.id 
+	       	 					 JOIN departments d ON me.depart_id = d.id 
+WHERE me.type_move_id = 3 and me.date_move <= NOW();
+
+-- Проверка
+-- select * FROM fired_today ;
+
+-- Представление 2. Список действующих сотрудников на текущую дату.
+
+
+CREATE VIEW current_employees (id, first_name, last_name, tab_number, `position`, department, salary) AS 
+SELECT e.id, p.first_name , p.last_name , e.tab_number, p2.name  , d.name ,  me.salary 
+FROM  employee e 
+		left join person p ON e.person_id = p.id
+	       join  move_employee me ON me.emp_id = e.id and date_move=(SELECT MAX(date_move) FROM move_employee me2 where me.emp_id = me2.emp_id )  
+	        join positions p2 ON me.position_id = p2.id 
+	       	  JOIN departments d ON me.depart_id = d.id 
+WHERE me.type_move_id != 3 and me.date_move <= NOW() or me.type_move_id = 3 and me.date_move > NOW()
+order by e.id;
+
+-- Проверка
+SELECT *FROM current_employees;
+
+
+-- Представление 3. Структура организации (подразделения с группировкой)
+
+CREATE VIEW struct_org (id, name, num, parent_id, date_begin, date_end) AS 
+SELECT id, name, num, parent_id, date_begin, date_end from departments  
+WHERE date_begin <= NOW() and (date_end is NULL or date_end >= NOW() )
+GROUP BY id 
+order by parent_id ;
+
+-- Проверка
+-- SELECT * FROM struct_org ;

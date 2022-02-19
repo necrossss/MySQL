@@ -1,0 +1,86 @@
+Select *from person p ;
+select *from countries c order by id ;
+select *from education e ;
+select *from marital_status ms ;
+
+
+-- Обновляем ссылки 
+UPDATE friendship SET 
+  user_id = FLOOR(1 + RAND() * 100),
+  friend_id = FLOOR(1 + RAND() * 100);
+  
+ UPDATE person SET education_id = FLOOR(1 + RAND() * 10);
+  UPDATE countries SET name = 'Kazakhstan' where id = 4;
+  
+ DELETE from countries where id > 10; 
+ desc person ;
+
+UPDATE person SET birthday  = DATE_ADD(birthday, INTERVAL -30 YEAR) ;
+
+
+Select *from connect_position_depart p ;
+select * from positions p ;
+select *from departments d ;
+select * from type_document td ;
+SELECT *from type_employee; 
+
+INSERT INTO connect_position_depart (position_id, depart_id) VALUES (1,1);
+
+DELETE from employee where id > 100;
+UPDATE connect_position_depart,positions SET position_id  = positions.id where connect_position_depart.id = positions.id ;
+UPDATE connect_position_depart SET depart_id = FLOOR(1 + RAND() * 30);  
+
+select * from documents d ;
+INSERT INTO documents (type_id, date_doc,name,emp_id) VALUES (1,now(),FLOOR(1 + RAND() * 3000),100);
+UPDATE documents SET emp_id  = documents.id ;
+
+ALTER TABLE documents RENAME COLUMN name TO number;
+
+select * FROM employee e ;
+INSERT INTO employee (person_id, emp_chief_id,name,type_employee_id) VALUES (1,1,FLOOR(1 + RAND() * 1000),1);
+UPDATE employee SET person_id  = employee.id ;
+UPDATE employee SET emp_chief_id = FLOOR(1 + RAND() * 100);
+ALTER TABLE employee RENAME COLUMN name TO tab_number ;
+
+
+SELECT * from move_employee me ;
+
+INSERT INTO move_employee (salary, allowance, type_move_id, schedule_id, date_move, document_id,position_id,depart_id,emp_id,rate) VALUES (100000,20000,1,1,now(),1,1,1,1,1);
+UPDATE move_employee,documents  SET move_employee.document_id   = documents.id WHERE move_employee.emp_id = documents.emp_id ;
+UPDATE move_employee SET depart_id  = (select depart_id from connect_position_depart where move_employee.position_id=connect_position_depart.position_id) ;
+
+UPDATE move_employee SET allowance  = allowance  + FLOOR(1 + RAND() * 150)*100;
+
+
+
+ SELECT * from documents d ;
+ SELECT *from type_document td ;
+ select * FROM move_employee me ;
+
+
+-- Триггер doc_move_emp
+DROP TRIGGER IF EXISTS doc_move_emp;
+delimiter //
+CREATE TRIGGER doc_move_emp AFTER INSERT ON documents
+FOR EACH ROW
+BEGIN
+	IF (NEW.type_id = 3) THEN
+	    INSERT INTO move_employee (salary, allowance,type_move_id,schedule_id ,date_move ,document_id ,position_id ,depart_id ,emp_id ,rate , created_at,updated_at)
+	    SELECT me.salary, me.allowance, NEW.type_id,me.schedule_id,NEW.date_doc,NEW.id,me.position_id,me.depart_id,NEW.emp_id ,1, now(),now() 
+	    from documents d join  move_employee me ON me.emp_id = d.emp_id and date_move=(SELECT MAX(date_move) FROM move_employee me2 where me.emp_id = me2.emp_id ) 
+	    where  d.emp_id = NEW.emp_id limit 1;
+    end IF;
+END //
+delimiter ;
+
+
+
+ INSERT INTO documents  (id, type_id, date_doc, number1, emp_id) VALUES (112,3,'2022-02-19','6666',98);
+-- INSERT INTO documents (id,type_id, date_doc,number1,emp_id) VALUES (101,1,now(),FLOOR(1 + RAND() * 3000),100);
+
+
+	
+ delete from documents  where id >100;
+delete from move_employee  where id >103;
+-- SELECT me.salary, me.allowance, me.schedule_id,me.position_id,me.depart_id,1, now(),now() from documents d join  move_employee me ON me.emp_id = d.emp_id  and date_move=(SELECT MAX(date_move) FROM move_employee me2 where me.emp_id = me2.emp_id ) 
+-- 	where d.type_id = 3 and d.emp_id = 99 limit 1;

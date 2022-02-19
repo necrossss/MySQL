@@ -1,0 +1,284 @@
+CREATE TABLE person (
+  id int unsigned NOT NULL AUTO_INCREMENT UNIQUE COMMENT 'Идентификатор строки',
+  first_name varchar(100)  NOT NULL COMMENT 'Имя',
+  last_name varchar(100)  NOT NULL COMMENT 'Фамилия',
+  second_name varchar(100)  NOT NULL COMMENT 'Отчество',
+  gender char(1)  NOT NULL COMMENT 'Пол',
+  birthday date NOT NULL COMMENT 'Дата рождения',
+  inn int unsigned NOT NULL COMMENT 'ИНН',
+  country_id int NOT NULL COMMENT 'Ссылка на страну/гражданство',
+  place_birth varchar(100)  DEFAULT NULL COMMENT 'Место рождения',
+  resident bool DEFAULT TRUE COMMENT 'Налоговый резидент',
+  marital_status_id int DEFAULT NULL COMMENT 'Ссылка семейное положение',
+  education_id int DEFAULT NULL COMMENT 'Ссылка образование',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id),
+  UNIQUE KEY inn (inn)
+) COMMENT='физ лицо';
+
+
+
+CREATE TABLE countries (
+  id int unsigned NOT NULL AUTO_INCREMENT UNIQUE,
+  name varchar(130) DEFAULT NULL COMMENT 'Название страны',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='Физ лица';
+
+
+CREATE TABLE marital_status (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(130) DEFAULT NULL COMMENT 'Название статуса семейного положения',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+)COMMENT='Физ лица';
+
+
+CREATE TABLE education (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(130) DEFAULT NULL COMMENT 'Вид образования',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='Физ лица';
+
+
+INSERT INTO marital_status (name) VALUES
+  ('Женат'),
+  ('Холост'),
+  ('Разведён'),
+  ('Разведена'),
+  ('Замужем'),
+  ('Не замужем'),
+  ('Вдовец'),
+  ('Вдова')
+;
+
+INSERT INTO education (name) VALUES
+  ('Высшее неполное'),
+  ('Высшее профессиональное'),
+  ('Среднее полное'),
+  ('Среднее неполное'),
+  ('Среднее профессионално-техническое'),
+  ('Средне-специальное'),
+  ('Аспирантура'),
+  ('Кандидат наук'),
+  ('Доктор наук'),
+  ('Школьник')
+;
+
+
+CREATE TABLE positions (
+  id int unsigned NOT NULL AUTO_INCREMENT UNIQUE,
+  name varchar(130) NOT NULL COMMENT 'Наименование должности',
+  code varchar(130) DEFAULT NULL COMMENT 'Код должности',
+  date_begin date NOT NULL COMMENT 'Дата начала',
+  date_end date DEFAULT NULL COMMENT 'Дата окончания',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='Должности';
+
+
+CREATE TABLE departments (
+  id int unsigned NOT NULL AUTO_INCREMENT UNIQUE,
+  name varchar(130) NOT NULL COMMENT 'Наименование подразделения',
+  num varchar(130) NOT NULL COMMENT 'Номер подразделения',
+  parent_id int unsigned DEFAULT NULL COMMENT 'Родительское подразделение',
+  date_begin date NOT NULL COMMENT 'Дата начала',
+  date_end date DEFAULT NULL COMMENT 'Дата окончания',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='Подразделения';
+
+
+CREATE TABLE employee (
+  id SERIAL COMMENT 'ид сотрудника',
+  person_id int unsigned NOT NULL COMMENT 'ид фл',
+  emp_chief_id int unsigned COMMENT 'начальник',
+  tab_number varchar(130) DEFAULT NULL COMMENT 'табельный номер',
+  type_employee_id int unsigned NOT NULL COMMENT 'вид сотрудника',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='Сотрудник';
+
+
+CREATE TABLE type_employee (
+  id SERIAL COMMENT 'ид тип сотрудника',
+  name varchar(130) DEFAULT NULL COMMENT 'наименование типа сотрудника',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='Тип сотрудника';
+
+
+INSERT INTO type_employee  (name) VALUES
+  ('Штатный сотрудник'),
+  ('Внештатный сотрудник'),
+  ('Внутренний совместитель'),
+  ('Внешний совместитель');
+  
+CREATE TABLE documents (
+  id SERIAL COMMENT 'ид документа',
+  type_id int unsigned NOT NULL COMMENT 'тип документа',
+  date_doc date NOT NULL COMMENT 'Дата документа',
+  number varchar(130) DEFAULT NULL COMMENT 'номер документа',
+  emp_id int unsigned NOT NULL COMMENT 'ид сотрудника',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='документы';
+
+
+CREATE TABLE type_document (
+  id SERIAL COMMENT 'ид тип документа',
+  name varchar(130) DEFAULT NULL COMMENT 'наименование типа документа',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки',
+  PRIMARY KEY (id)
+) COMMENT='Тип документа';
+
+INSERT INTO type_document (name) VALUES
+  ('Трудовой договор - приём'),
+  ('Дополнительное соглашение'),
+  ('Увольнение'),
+  ('Перевод на должность'),
+  ('Изминение оклада');
+
+ CREATE TABLE connect_position_depart (
+  id SERIAL COMMENT 'ид ',
+  position_id int unsigned NOT NULL COMMENT 'ид должности',
+  depart_id int unsigned NOT NULL COMMENT 'ид подразделения',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Время обновления строки'
+) COMMENT='связь должность - подразделение';
+
+
+
+DESC connect_position_depart ;
+DESC departments  ;
+DESC documents ;
+DESC type_document ;
+DESC education ;
+DESC employee ;
+DESC type_employee ;
+DESC marital_status ;
+DESC move_employee ;
+DESC type_move ;
+DESC schedule ;
+DESC person ;
+DESC countries ;
+DESC marital_status ;
+DESC education ;
+DESC positions ;
+-- Добавляем внешние ключи
+ALTER TABLE connect_position_depart
+  ADD CONSTRAINT connect_position_depart_depart_id_fk 
+    FOREIGN KEY (depart_id) REFERENCES departments(id)
+      ON DELETE CASCADE;
+      
+ALTER TABLE connect_position_depart
+  ADD CONSTRAINT connect_position_depart_position_id_fk 
+    FOREIGN KEY (position_id) REFERENCES positions(id)
+      ON DELETE CASCADE;
+      
+ALTER TABLE departments 
+  ADD CONSTRAINT departments_parent_id_fk 
+    FOREIGN KEY (parent_id) REFERENCES departments(id)
+      ON DELETE CASCADE;
+      
+ALTER TABLE type_document MODIFY COLUMN id  INT(10) UNSIGNED;
+ALTER TABLE documents 
+  ADD CONSTRAINT documents_type_id_fk 
+    FOREIGN KEY (type_id) REFERENCES type_document(id)
+      ON DELETE CASCADE;
+
+ALTER TABLE employee MODIFY COLUMN id  INT(10) UNSIGNED;
+ALTER TABLE documents 
+  ADD CONSTRAINT documents_emp_id_fk 
+    FOREIGN KEY (emp_id) REFERENCES employee(id)
+      ON DELETE CASCADE;
+
+ALTER TABLE employee 
+  ADD CONSTRAINT employee_person_id_fk 
+    FOREIGN KEY (person_id) REFERENCES person(id)
+      ON DELETE CASCADE;
+
+ALTER TABLE employee 
+  ADD CONSTRAINT employee_emp_chief_id_fk 
+    FOREIGN KEY (emp_chief_id) REFERENCES employee(id)
+      ON DELETE SET NULL;     
+
+ALTER TABLE employee MODIFY COLUMN type_employee_id int unsigned default NULL;  
+ALTER TABLE type_employee MODIFY COLUMN id  INT(10) UNSIGNED;
+ALTER TABLE employee 
+  ADD CONSTRAINT employee_type_employee_id_fk 
+    FOREIGN KEY (type_employee_id) REFERENCES type_employee(id)
+      ON DELETE SET NULL;
+      
+ALTER TABLE type_move MODIFY COLUMN id  INT(10) UNSIGNED;
+ALTER TABLE move_employee MODIFY COLUMN type_move_id int unsigned default NULL; 
+ALTER TABLE schedule  MODIFY COLUMN id  INT(10) UNSIGNED;
+ALTER TABLE move_employee MODIFY COLUMN schedule_id int unsigned default NULL;
+ALTER TABLE move_employee 
+  ADD CONSTRAINT move_employee_type_move_id_fk 
+    FOREIGN KEY (type_move_id) REFERENCES type_move(id)
+      ON DELETE SET NULL;
+      
+ALTER TABLE move_employee 
+  ADD CONSTRAINT move_employee_schedule_id_fk 
+    FOREIGN KEY (schedule_id) REFERENCES schedule(id)
+      ON DELETE SET NULL;
+      
+ALTER TABLE move_employee MODIFY COLUMN document_id int unsigned default NULL;
+ALTER TABLE move_employee MODIFY COLUMN position_id int unsigned default NULL;
+ALTER TABLE move_employee MODIFY COLUMN depart_id int unsigned default NULL;
+ALTER TABLE documents  MODIFY COLUMN id  INT(10) UNSIGNED;
+ALTER TABLE move_employee 
+  ADD CONSTRAINT move_employee_document_id_fk 
+    FOREIGN KEY (document_id) REFERENCES documents(id)
+      ON DELETE SET NULL;
+ 
+ALTER TABLE move_employee 
+  ADD CONSTRAINT move_employee_position_id_fk 
+    FOREIGN KEY (position_id) REFERENCES positions(id)
+      ON DELETE SET NULL;
+      
+ALTER TABLE move_employee 
+  ADD CONSTRAINT move_employee_depart_id_fk 
+    FOREIGN KEY (depart_id) REFERENCES departments (id)
+      ON DELETE SET NULL;
+     
+ALTER TABLE move_employee 
+  ADD CONSTRAINT move_employee_emp_id_fk 
+    FOREIGN KEY (emp_id) REFERENCES employee  (id)
+      ON DELETE CASCADE;
+
+ALTER TABLE person MODIFY COLUMN country_id int unsigned default NULL;     
+ALTER TABLE person
+  ADD CONSTRAINT person_country_id_fk 
+    FOREIGN KEY (country_id) REFERENCES countries  (id)
+      ON DELETE SET NULL;
+
+ALTER TABLE person  MODIFY COLUMN marital_status_id  INT(10) UNSIGNED ;
+ALTER TABLE person  MODIFY COLUMN education_id  INT(10) UNSIGNED ;
+ALTER TABLE person
+  ADD CONSTRAINT person_marital_status_id_fk 
+    FOREIGN KEY (marital_status_id) REFERENCES marital_status(id)
+      ON DELETE SET NULL;
+      
+ALTER TABLE person
+  ADD CONSTRAINT person_education_id_fk 
+    FOREIGN KEY (education_id) REFERENCES education(id)
+      ON DELETE SET NULL;
+
+
+CREATE INDEX positions_name_idx ON positions(name);
+CREATE INDEX departments_name_idx ON departments(name);
+CREATE INDEX person_first_name_last_name_idx ON person(first_name, last_name);
+CREATE INDEX move_employee_date_move_idx ON move_employee(date_move);
